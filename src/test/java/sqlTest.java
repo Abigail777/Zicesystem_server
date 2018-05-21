@@ -1,4 +1,5 @@
-import com.product.judge.Application;
+import com.product.Application;
+import com.product.judge.api.business.model.Sysuser;
 import com.product.judge.api.business.service.ApiService;
 import com.product.judge.common.base.dao.JBaseDao;
 import org.junit.Test;
@@ -19,6 +20,9 @@ public class sqlTest
     @Test
     public void test() throws Exception
     {
-        System.out.println(apiService.getAllUsers());
+        String sql = "select * from sysuser where usr_id = ?";
+        Sysuser sysuser = jBaseDao.queryForModel(sql, new String[]{"11"}, Sysuser.class);
+        System.out.println(sysuser.getUsr_id());
+
     }
 }

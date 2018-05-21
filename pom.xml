@@ -20,21 +20,6 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <dependencies>
-                    <!-- spring热部署 -->
-                    <dependency>
-                        <groupId>org.springframework</groupId>
-                        <artifactId>springloaded</artifactId>
-                        <version>1.2.6.RELEASE</version>
-                    </dependency>
-                </dependencies>
-                <configuration>
-                    <mainClass>cn.springboot.Mainspringboot</mainClass>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
 
@@ -54,8 +39,6 @@
         <javax.servlet-api.version>3.1.0</javax.servlet-api.version>
 
         <spring.boot.version>1.5.8.RELEASE</spring.boot.version>
-        <spring.version>4.3.10.RELEASE</spring.version>
-
         <alibaba.druid.version>1.1.4</alibaba.druid.version>
         <alibaba.fastjson.version>1.2.33</alibaba.fastjson.version>
 
@@ -153,7 +136,6 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-jdbc</artifactId>
-            <version>${spring.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

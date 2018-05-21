@@ -3,6 +3,7 @@ package com.product.judge.common.config;
 import com.product.judge.common.interceptor.LoginHandlerInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.filter.HttpPutFormContentFilter;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
@@ -12,7 +13,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 @Configuration
 public class MyMvcConfig extends WebMvcConfigurerAdapter
 {
-
+    @Bean
+    public HttpPutFormContentFilter httpPutFormContentFilter()
+    {
+        return new HttpPutFormContentFilter();
+    }
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry)
@@ -33,6 +38,7 @@ public class MyMvcConfig extends WebMvcConfigurerAdapter
             {
                 registry.addViewController("/vue").setViewName("/index-bak.html");
                 registry.addViewController("/").setViewName("login");
+                registry.addViewController("/index").setViewName("login");
                 registry.addViewController("/index.html").setViewName("login");
                 registry.addViewController("/main.html").setViewName("dashboard");
             }
@@ -41,8 +47,8 @@ public class MyMvcConfig extends WebMvcConfigurerAdapter
             @Override
             public void addInterceptors(InterceptorRegistry registry)
             {
-
-                registry.addInterceptor(new LoginHandlerInterceptor()).addPathPatterns("/**").excludePathPatterns("/index.html", "/", "/login");
+                //放行登录注册等请求
+                registry.addInterceptor(new LoginHandlerInterceptor()).addPathPatterns("/**").excludePathPatterns("/index.html", "/", "/login", "/logon", "/register", "/signup", "/checkuser");
             }
         };
         return adapter;

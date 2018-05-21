@@ -1,5 +1,6 @@
 package com.product.judge.common.interceptor;
 
+import com.product.judge.common.util.SessionUtil;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -15,7 +16,8 @@ public class LoginHandlerInterceptor implements HandlerInterceptor
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception
     {
-        Object user = request.getSession().getAttribute("loginUser");
+
+        Object user = request.getSession().getAttribute(SessionUtil.SESSION_ATTR);
         if ("androidRequest".equals(request.getHeader("entryType")))
         {
             return true;

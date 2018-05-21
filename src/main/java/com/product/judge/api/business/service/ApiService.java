@@ -2,7 +2,7 @@ package com.product.judge.api.business.service;
 
 import com.product.judge.common.base.service.BaseService;
 
-import java.util.List;
+import java.util.Map;
 
 /**
  * @author haiyan
@@ -13,7 +13,5 @@ import java.util.List;
  **/
 public interface ApiService extends BaseService
 {
-    List getAllUsers();
-
-    List getUserByName(String username);
+    Map checkLoginInfo(String usr_id, String usr_passwd);
 }

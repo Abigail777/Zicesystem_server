@@ -1,4 +1,4 @@
-import com.product.judge.Application;
+import com.product.Application;
 import com.product.judge.api.plugins.email.EmailSendFactory;
 import org.junit.Test;
 import org.junit.runner.RunWith;

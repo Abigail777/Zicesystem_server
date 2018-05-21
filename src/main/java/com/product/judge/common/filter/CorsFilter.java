@@ -1,7 +1,7 @@
 package com.product.judge.common.filter;
 
 /**
- * @author lance
+ * @author haiyan
  * @version v0.0.1
  * @project judgeApi
  * @describe 跨域过滤器

@@ -1,4 +1,4 @@
-package com.product.judge.api.business.controller;
+package com.product.judge.common.config;
 
 import com.product.judge.common.exception.UserNotExistException;
 import org.springframework.web.bind.annotation.ControllerAdvice;

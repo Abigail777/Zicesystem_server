@@ -6,7 +6,7 @@ import com.product.judge.common.base.service.impl.BaseServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.Map;
 
 /**
  * @author haiyan
@@ -22,15 +22,10 @@ public class ApiServiceImpl extends BaseServiceImpl implements ApiService
     @Autowired
     ApiDao apiDao;
 
-    @Override
-    public List getAllUsers()
-    {
-        return apiDao.getAllUsersBySql();
-    }
 
     @Override
-    public List getUserByName(String username)
+    public Map checkLoginInfo(String usr_id, String usr_passwd)
     {
-        return apiDao.getUserByName(username);
+        return apiDao.checkLoginInfo(usr_id, usr_passwd);
     }
 }

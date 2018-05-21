@@ -6,12 +6,19 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Dashboard Template for Bootstrap</title>
+    <title>考试练习系统-教师端</title>
     <!-- Bootstrap core CSS -->
     <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
 
     <!-- Custom styles for this template -->
     <link th:href="@{/css/dashboard.css}" rel="stylesheet">
+    <link th:href="@{/css/sweetalert.css}" rel="stylesheet">
+    <script type="text/javascript" th:src="@{/js/sweetalert.min.js}"></script>
+    <script type="text/javascript">
+        function dev() {
+            swal("开发中...")
+        }
+    </script>
     <style type="text/css">
         /* Chart.js */
         @-webkit-keyframes chartjs-render-animation {
@@ -59,11 +66,11 @@
                 </div>
             </div>
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-                <h1 class="h2">Dashboard</h1>
+                <h1 class="h2">购买统计</h1>
                 <div class="btn-toolbar mb-2 mb-md-0">
                     <div class="btn-group mr-2">
-                        <button class="btn btn-sm btn-outline-secondary">Share</button>
-                        <button class="btn btn-sm btn-outline-secondary">Export</button>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="dev()">Share</button>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="dev()">Export</button>
                     </div>
                     <button class="btn btn-sm btn-outline-secondary dropdown-toggle">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -78,28 +85,22 @@
                     </button>
                 </div>
             </div>
-
             <canvas class="my-4 chartjs-render-monitor" id="myChart" width="1076" height="454"
                     style="display: block; width: 1076px; height: 454px;"></canvas>
-
-
         </main>
     </div>
 </div>
-
 <!-- Bootstrap core JavaScript
 ================================================== -->
 <!-- Placed at the end of the document so the pages load faster -->
 <script type="text/javascript" th:src="@{/js/jquery-3.2.1.slim.min.js}"></script>
 <script type="text/javascript" th:src="@{/js/popper.min.js}"></script>
 <script type="text/javascript" th:src="@{/js/bootstrap.min.js}"></script>
-
 <!-- Icons -->
 <script type="text/javascript" th:src="@{/js/feather.min.js}"></script>
 <script>
     feather.replace()
 </script>
-
 <!-- Graphs -->
 <script type="text/javascript" th:src="@{/js/Chart.min.js}"></script>
 <script>
@@ -109,7 +110,7 @@
         data: {
             labels: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
             datasets: [{
-                data: [15339, 21345, 18483, 24003, 23489, 24092, 12034],
+                data: [1, 3, 5, 7, 12, 24, 43],
                 lineTension: 0,
                 backgroundColor: 'transparent',
                 borderColor: '#007bff',
@@ -131,7 +132,5 @@
         }
     });
 </script>
-
 </body>
-
 </html>

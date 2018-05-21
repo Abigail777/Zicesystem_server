@@ -37,7 +37,7 @@ public class Sqllog implements Serializable
 
     public String toString()
     {
-        String str = "Sql日志: sqlID [ " + this.id + " ] 操作的sql [ " + this.sql + " ] 调用位置 [ " + this.callLocation + ":" + this.lineNum + " ] 消耗时间 [" + timeConsuming + "]";
+        String str = "Sql日志: sqlID [ " + this.id + " ] 操作的sql [ " + this.sql + " ] 调用位置 [ " + this.callLocation + ":" + this.lineNum + " ] 消耗时间 [" + timeConsuming + "毫秒]";
         return str;
     }
 

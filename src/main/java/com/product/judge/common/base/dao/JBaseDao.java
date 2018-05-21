@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.ColumnMapRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapperResultSetExtractor;
@@ -105,9 +106,9 @@ public class JBaseDao
             String curTime = DateUtil.getCurrentTime();
             logger.info("准备执行sql [" + logId + "] -- 执行时间:" + curTime + ", 执行方法:" + methodName + ", 执行sql:" + sql + " " + msg);
         }
-        catch (Exception ee)
+        catch (Exception e)
         {
-            ee.printStackTrace();
+            e.printStackTrace();
         }
     }
 
@@ -176,39 +177,6 @@ public class JBaseDao
         return backVal;
     }
 
-    /**
-     * 查询double
-     *
-     * @param sql      预编译带？的sql
-     * @param args     参数数组
-     * @param argTypes 参数类型数组(使用java.sql.Types常数)
-     * @return double
-     */
-    public double queryForDouble(String sql, Object[] args, int[] argTypes) throws DataAccessException
-    {
-        double backVal = 0.0;
-        Long stime = System.currentTimeMillis();
-        String status = SqlConstants.faild;
-        String sqlLogId = StringUtil.generateUUID();
-        String argsInfo = (args != null ? "参数 - " + Arrays.toString(args) : "");
-        try
-        {
-            this.beforExecuteSql("queryForDouble", sql, argsInfo, sqlLogId);
-            Number number = (Number) this.jdbcTemplate.queryForObject(sql, args, argTypes, Double.class);
-            backVal = (number != null ? number.doubleValue() : 0.0);
-            status = SqlConstants.successful;
-        }
-        catch (DataAccessException dataAccessException)
-        {
-            throw dataAccessException;
-        }
-        finally
-        {
-            Long etime = System.currentTimeMillis();
-            log(sql + " " + argsInfo, stime, etime, status, sqlLogId, argsInfo);
-        }
-        return backVal;
-    }
 
     /**
      * 查询Sql，返回float
@@ -274,39 +242,6 @@ public class JBaseDao
         return backVal;
     }
 
-    /**
-     * 查询float
-     *
-     * @param sql      预编译带？的sql
-     * @param args     参数数组
-     * @param argTypes 参数类型数组(使用java.sql.Types常数)
-     * @return
-     */
-    public float queryForFloat(String sql, Object[] args, int[] argTypes) throws DataAccessException
-    {
-        float backVal = 0;
-        Long stime = System.currentTimeMillis();
-        String status = SqlConstants.faild;
-        String sqlLogId = StringUtil.generateUUID();
-        String argsInfo = (args != null ? "参数 - " + Arrays.toString(args) : "");
-        try
-        {
-            this.beforExecuteSql("queryForFloat", sql, argsInfo, sqlLogId);
-            Number number = (Number) this.jdbcTemplate.queryForObject(sql, args, argTypes, Float.class);
-            backVal = (number != null ? number.floatValue() : 0);
-            status = SqlConstants.successful;
-        }
-        catch (DataAccessException dataAccessException)
-        {
-            throw dataAccessException;
-        }
-        finally
-        {
-            Long etime = System.currentTimeMillis();
-            log(sql + " " + argsInfo, stime, etime, status, sqlLogId, argsInfo);
-        }
-        return backVal;
-    }
 
     /**
      * 查询Sql，返回int
@@ -376,42 +311,6 @@ public class JBaseDao
         return backVal;
     }
 
-    /**
-     * 查询int
-     *
-     * @param sql      预编译带？的sql
-     * @param args     参数数组
-     * @param argTypes 参数类型数组(使用java.sql.Types常数)
-     * @return
-     */
-    public int queryForInt(String sql, Object[] args, int[] argTypes) throws DataAccessException
-    {
-        int backVal = 0;
-        Long stime = System.currentTimeMillis();
-        String status = SqlConstants.faild;
-        String sqlLogId = StringUtil.generateUUID();
-        String argsInfo = (args != null ? "参数 - " + Arrays.toString(args) : "");
-        try
-        {
-            this.beforExecuteSql("queryForInt", sql, argsInfo, sqlLogId);
-            Integer temBack = this.jdbcTemplate.queryForObject(sql, args, argTypes, Integer.class);
-            if (null != temBack)
-            {
-                backVal = temBack;
-            }
-            status = SqlConstants.successful;
-        }
-        catch (DataAccessException dataAccessException)
-        {
-            throw dataAccessException;
-        }
-        finally
-        {
-            Long etime = System.currentTimeMillis();
-            log(sql + " " + argsInfo, stime, etime, status, sqlLogId, argsInfo);
-        }
-        return backVal;
-    }
 
     /**
      * 查询Sql，返回List
@@ -460,7 +359,7 @@ public class JBaseDao
         {
             this.beforExecuteSql("queryForList", sql, argsInfo, sqlLogId);
             backVal = this.jdbcTemplate.query(sql, args, new RowMapperResultSetExtractor<Map<String, Object>>(new ColumnMapRowMapper(), 0));
-            // super.queryForList(sql, args);
+
             status = SqlConstants.successful;
         }
         catch (DataAccessException dataAccessException)
@@ -476,26 +375,73 @@ public class JBaseDao
     }
 
     /**
-     * 查询List
-     *
-     * @param sql      预编译带？的sql
-     * @param args     参数数组
-     * @param argTypes 参数类型数组(使用java.sql.Types常数)
-     * @return
+     * 查询Sql，返回对象
      */
     @SuppressWarnings("rawtypes")
-    public List queryForList(String sql, Object[] args, int[] argTypes) throws DataAccessException
+    public <T> T queryForModel(String sql, Object[] args, Class<T> cls) throws DataAccessException
     {
-        List<Map<String, Object>> backVal = null;
+        T backVal = null;
         Long stime = System.currentTimeMillis();
         String status = SqlConstants.faild;
         String sqlLogId = StringUtil.generateUUID();
         String argsInfo = (args != null ? "参数 - " + Arrays.toString(args) : "");
         try
         {
-            this.beforExecuteSql("queryForList", sql, argsInfo, sqlLogId);
-            backVal = this.jdbcTemplate.query(sql, args, argTypes, new RowMapperResultSetExtractor<Map<String, Object>>(new ColumnMapRowMapper(), 0));
-            // super.queryForList(sql, args, argTypes);
+            backVal = this.jdbcTemplate.queryForObject(sql, args, new BeanPropertyRowMapper<T>(cls));
+            status = SqlConstants.successful;
+        }
+        catch (DataAccessException dataAccessException)
+        {
+            throw dataAccessException;
+        }
+        finally
+        {
+            Long etime = System.currentTimeMillis();
+            log(sql + " " + argsInfo, stime, etime, status, sqlLogId, argsInfo);
+        }
+        return backVal;
+    }
+
+    /**
+     * 查询Sql，返回List
+     */
+    @SuppressWarnings("rawtypes")
+    public List queryForModelList(String sql, Class cls) throws DataAccessException
+    {
+        List<Class> backVal = null;
+        Long stime = System.currentTimeMillis();
+        String status = SqlConstants.faild;
+        String sqlLogId = StringUtil.generateUUID();
+        try
+        {
+            this.beforExecuteSql("queryForModelList", sql, "", sqlLogId);
+            backVal = this.jdbcTemplate.query(sql, new BeanPropertyRowMapper(cls));
+            status = SqlConstants.successful;
+        }
+        catch (DataAccessException dataAccessException)
+        {
+            throw dataAccessException;
+        }
+        finally
+        {
+            Long etime = System.currentTimeMillis();
+            log(sql, stime, etime, status, sqlLogId, "");
+        }
+        return backVal;
+    }
+
+    @SuppressWarnings("rawtypes")
+    public List queryForModelList(String sql, Object[] args, Class cls) throws DataAccessException
+    {
+        List<Class> backVal = null;
+        Long stime = System.currentTimeMillis();
+        String status = SqlConstants.faild;
+        String sqlLogId = StringUtil.generateUUID();
+        String argsInfo = (args != null ? "参数 - " + Arrays.toString(args) : "");
+        try
+        {
+            this.beforExecuteSql("queryForModelList", sql, argsInfo, sqlLogId);
+            backVal = this.jdbcTemplate.query(sql, args, new BeanPropertyRowMapper(cls));
             status = SqlConstants.successful;
         }
         catch (DataAccessException dataAccessException)
@@ -578,43 +524,6 @@ public class JBaseDao
     }
 
     /**
-     * 查询long
-     *
-     * @param sql      预编译带？的sql
-     * @param args     参数数组
-     * @param argTypes 参数类型数组(使用java.sql.Types常数)
-     * @return
-     */
-    public long queryForLong(String sql, Object[] args, int[] argTypes) throws DataAccessException
-    {
-        long backVal = 0L;
-        Long stime = System.currentTimeMillis();
-        String status = SqlConstants.faild;
-        String sqlLogId = StringUtil.generateUUID();
-        String argsInfo = (args != null ? "参数 - " + Arrays.toString(args) : "");
-        try
-        {
-            this.beforExecuteSql("queryForLong", sql, argsInfo, sqlLogId);
-            Long temBack = this.jdbcTemplate.queryForObject(sql, args, argTypes, Long.class);
-            if (null != temBack)
-            {
-                backVal = temBack;
-            }
-            status = SqlConstants.successful;
-        }
-        catch (DataAccessException dataAccessException)
-        {
-            throw dataAccessException;
-        }
-        finally
-        {
-            Long etime = System.currentTimeMillis();
-            log(sql + " " + argsInfo, stime, etime, status, sqlLogId, argsInfo);
-        }
-        return backVal;
-    }
-
-    /**
      * @param sql
      * @return Map 如果sql可以查到值，返回Map，否则返回null
      */
@@ -662,40 +571,6 @@ public class JBaseDao
         {
             this.beforExecuteSql("queryForMap", sql, argsInfo, sqlLogId);
             backVal = this.jdbcTemplate.queryForMap(sql, args);
-            status = SqlConstants.successful;
-        }
-        catch (EmptyResultDataAccessException emptyException)
-        {
-            backVal = null;
-            status = SqlConstants.successful;
-        }
-        finally
-        {
-            Long etime = System.currentTimeMillis();
-            log(sql + " " + argsInfo, stime, etime, status, sqlLogId, argsInfo);
-        }
-        return backVal;
-    }
-
-    /**
-     * 查询Map
-     *
-     * @param sql      预编译带？的sql
-     * @param args     参数数组
-     * @param argTypes 参数类型数组(使用java.sql.Types常数)
-     * @return Map
-     */
-    public Map queryForMap(String sql, Object[] args, int[] argTypes) throws DataAccessException
-    {
-        Map<String, Object> backVal = null;
-        Long stime = System.currentTimeMillis();
-        String status = SqlConstants.faild;
-        String sqlLogId = StringUtil.generateUUID();
-        String argsInfo = (args != null ? "参数 - " + Arrays.toString(args) : "");
-        try
-        {
-            this.beforExecuteSql("queryForMap", sql, argsInfo, sqlLogId);
-            backVal = this.jdbcTemplate.queryForMap(sql, args, argTypes);
             status = SqlConstants.successful;
         }
         catch (EmptyResultDataAccessException emptyException)
@@ -773,41 +648,6 @@ public class JBaseDao
     }
 
     /**
-     * 查询String
-     *
-     * @param sql      预编译带？的sql
-     * @param args     参数数组
-     * @param argTypes 参数类型数组(使用java.sql.Types常数)
-     * @return String
-     */
-    public String queryForString(String sql, Object[] args, int[] argTypes) throws DataAccessException
-    {
-        String backVal = null;
-        Long stime = System.currentTimeMillis();
-        String status = SqlConstants.faild;
-        String sqlLogId = StringUtil.generateUUID();
-        String argsInfo = (args != null ? "参数 - " + Arrays.toString(args) : "");
-        try
-        {
-            this.beforExecuteSql("queryForString", sql, argsInfo, sqlLogId);
-            backVal = (String) this.jdbcTemplate.queryForObject(sql, args, argTypes, String.class);
-            status = SqlConstants.successful;
-        }
-        catch (EmptyResultDataAccessException ee)
-        {
-            backVal = null;
-            status = SqlConstants.successful;
-        }
-        finally
-        {
-            Long etime = System.currentTimeMillis();
-            log(sql + " " + argsInfo, stime, etime, status, sqlLogId, argsInfo);
-        }
-        return backVal;
-    }
-
-
-    /**
      * 执行数据修改操作，返回影响的行数
      */
     public int update(final String sql) throws DataAccessException
@@ -866,39 +706,4 @@ public class JBaseDao
         }
         return backVal;
     }
-
-    /**
-     * 执行数据库修改操作
-     *
-     * @param sql      预编译带？的sql
-     * @param args     参数数组
-     * @param argTypes 参数类型数组(使用java.sql.Types常数)
-     * @return 影响的数据行数
-     * @throws DataAccessException
-     */
-    public int update(String sql, Object[] args, int[] argTypes) throws DataAccessException
-    {
-        int backVal;
-        Long stime = System.currentTimeMillis();
-        String status = SqlConstants.faild;
-        String sqlLogId = StringUtil.generateUUID();
-        String argsInfo = (args != null ? "参数 - " + Arrays.toString(args) : "");
-        try
-        {
-            this.beforExecuteSql("update", sql, argsInfo, sqlLogId);
-            backVal = this.jdbcTemplate.update(sql, args, argTypes);
-            status = SqlConstants.successful;
-        }
-        catch (DataAccessException dataAccessException)
-        {
-            throw dataAccessException;
-        }
-        finally
-        {
-            Long etime = System.currentTimeMillis();
-            log(sql + " " + argsInfo, stime, etime, status, sqlLogId, argsInfo);
-        }
-        return backVal;
-    }
-
 }

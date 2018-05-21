@@ -1,4 +1,4 @@
-package com.product.judge;
+package com.product;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
