@@ -1,16 +1,27 @@
 package com.product.judge.api.business.controller;
 
+import com.product.judge.api.business.model.Batchinfo;
+import com.product.judge.api.business.model.Questionbank;
 import com.product.judge.api.business.model.Questionbanktemp;
 import com.product.judge.api.business.model.Sysdic;
 import com.product.judge.api.business.service.QuestionService;
+import com.product.judge.common.base.model.QueryResult;
+import com.product.judge.common.base.model.Result;
 import com.product.judge.common.constant.GlobalConstant;
+import com.product.judge.common.util.ExcelUtil;
 import com.product.judge.common.util.SessionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
@@ -119,9 +130,127 @@ public class QuestionController
      * @return
      */
     @PostMapping("/appearQuestions")
-    public String appearQuestions(HttpServletRequest request, @RequestParam Map map)
+    public String appearQuestions(HttpServletRequest request, Batchinfo batchinfo)
     {
-        System.out.println(map);
+        questionService.appearQuestions(batchinfo, request);
         return "redirect:/questions/tempQuestions";
+    }
+
+    /**
+     * 模糊查询题库表试题
+     *
+     * @param request
+     * @param model
+     * @return
+     */
+    @RequestMapping("/questionlikeSearch")
+    public String questionlikeSearch(HttpServletRequest request, Model model, String likestr)
+    {
+        List<Questionbank> list = questionService.getRelevantInfo(likestr, request);
+        model.addAttribute("questions", list);
+        return "question/questionsearch";
+    }
+
+    @RequestMapping("/search")
+    @ResponseBody
+    public QueryResult searchdata(@RequestParam Map params, HttpServletRequest request)
+    {
+        params.put("ownid", SessionUtil.getCurrentUser(request));
+        //test
+        params.put("ownid", "0");
+        List rows = questionService.getAllReleasedQuestions(params);
+        int total = questionService.getCount4ReleasedQuestions(params);
+        return new QueryResult(rows, total);
+    }
+
+    /**
+     * 下载模板
+     *
+     * @throws IOException
+     */
+    @RequestMapping(value = "/downquestiontemplate", method = RequestMethod.GET)
+    public void downquestiontemplate(HttpServletRequest request, HttpServletResponse response) throws IOException
+    {
+        String filePath = this.getClass().getClassLoader().getResource("templates/excelTemplate/questionsTemplate.xlsx").getPath();
+        //获取要下载的模板名称
+        String fileDownName = "questionsTemplate.xlsx";
+        try
+        {
+            InputStream fis = new FileInputStream(new File(filePath));
+            byte[] buffer = new byte[fis.available()];
+            fis.read(buffer);
+            fis.close();
+            response.reset();
+            response.setContentType("bin");
+
+            String fileNames = fileDownName;
+            String agent = request.getHeader("USER-AGENT");
+
+            String codedfilename = "";
+            if (null != agent && -1 != agent.indexOf("MSIE") || null != agent && -1 != agent.indexOf("Trident"))
+            {// ie
+
+                String name = java.net.URLEncoder.encode(fileNames, "UTF8");
+
+                codedfilename = name;
+            }
+            else if (null != agent && -1 != agent.indexOf("Mozilla"))
+            {// 火狐,chrome等
+
+                codedfilename = new String(fileNames.getBytes("UTF-8"), "iso-8859-1");
+            }
+
+            response.addHeader("Content-Disposition", "attachment; filename=\"" + codedfilename + "\"");
+            response.getOutputStream().write(buffer);
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 跳转到文件上载界面
+     *
+     * @param map
+     * @return
+     */
+    @RequestMapping("/uploadquestions")
+    public String uploadquestions(Map<String, Object> map)
+    {
+        return "question/uploadquestions";
+    }
+
+    /**
+     * 文件上载
+     *
+     * @param multipartfile
+     * @return
+     * @throws IOException
+     */
+    @RequestMapping("/fileuploaded")
+    @ResponseBody
+    public Result fileuploaded(@RequestParam(value = "xls_file", required = false) MultipartFile multipartfile) throws IOException
+    {
+        // 判断文件是否为空
+        if (multipartfile.isEmpty())
+        {
+            return new Result(false);
+        }
+        InputStream is = null;
+        //遍历校验excel并处理数据
+        is = multipartfile.getInputStream();
+        List<List<String>> datas = ExcelUtil.readXlsx(is);
+        // TODO: 2018/5/23 处理业务
+        System.out.println(datas);
+        if (datas != null && datas.size() > 0)
+        {
+            return new Result(true);
+
+        }
+        else
+        {
+            return new Result(false);
+        }
     }
 }

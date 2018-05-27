@@ -122,4 +122,14 @@ public class LoginController
         return SIGNUP;
     }
 
+    /**
+     * 修改用户信息
+     *
+     * @return
+     */
+    @RequestMapping(value = "/modifyUserInfo")
+    public String modifyUserInfo()
+    {
+        return "modifyUserInfo";
+    }
 }
