@@ -13,7 +13,6 @@
     <link th:href="@{/css/sweetalert.css}" rel="stylesheet">
     <script type="text/javascript" th:src="@{/js/sweetalert.min.js}"></script>
 </head>
-
 <body>
 <div th:replace="commons/bar::topbar"></div>
 <div class="container-fluid">
@@ -21,11 +20,11 @@
         <div th:replace="commons/bar::#sidebar(activeUri='uploadquestions')"></div>
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
             <h2><a class="btn btn-sm btn-success" href="#" th:href="@{/questions/downquestiontemplate}">下载模板文件</a></h2>
+            <select id='classid' class="form-control selectpicker" data-live-search="true"/>
             <form id="importFile" name="importFile" class="form-horizontal" method="post"
                   enctype="multipart/form-data">
                 <label class="control-label">请选择要导入的Excel文件：</label>
-                <input id="xls_file" name="xls_file" class="file-loading" type="file" multiple accept=".xls,.xlsx"
-                > <br>
+                <input id="xls_file" name="xls_file" class="file-loading" type="file" multiple accept=".xls,.xlsx"><br>
             </form>
         </main>
     </div>
@@ -37,6 +36,16 @@
 <script type="text/javascript" th:src="@{/js/fileinput.min.js}"></script>
 <script type="text/javascript" th:src="@{/js/zh.js}"></script>
 <script>
+    $.ajax({
+        url: "[[@{/questions/getQuestionType}]]",
+        dataType: "json",
+        success: function (data) {
+            var optArr = [];
+            for (var i = 0; i < data.length; i++) {
+                $('.selectpicker').append("<option value=" + data[i].value + ">" + data[i].text + "</option>");
+            }
+        }
+    });
     initUpload("xls_file", "[[@{/questions/fileuploaded}]]");
 
     function initUpload(ctrlName, uploadUrl) {
@@ -62,8 +71,8 @@
                 'zip': '<i class="fa fa-file-archive-o text-muted"></i>',
             },
             uploadExtraData: function () {
-                var extraValue = "test";
-                return {"excelType": extraValue};
+                var type = $("#classid").val();
+                return {"type": type};
             }
         });
     }

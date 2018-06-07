@@ -26,6 +26,6 @@ public class PublicMethodDao extends BaseDao
     public List<Sysdic> getSysDicByType(String type)
     {
         String sql = "select dic_name,dic_value from sysdic where dic_type = ?";
-        return getjBaseDao().queryForModelList(sql, new String[]{type}, Sysdic.class);
+        return queryForModelList(sql, new String[]{type}, Sysdic.class);
     }
 }

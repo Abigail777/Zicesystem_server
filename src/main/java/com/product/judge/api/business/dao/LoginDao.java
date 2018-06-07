@@ -22,7 +22,7 @@ public class LoginDao extends BaseDao
     public int checkLoginInfo(Sysuser sysuser)
     {
         String sql = "select count(1) flag from sysuser where usr_id = ? and usr_passwd = ? and usr_flag = 1 and usr_type = 1 and usr_black = 0";
-        return getjBaseDao().queryForInt(sql, new String[]{sysuser.getUsr_id(), sysuser.getUsr_passwd()});
+        return queryForInt(sql, new String[]{sysuser.getUsr_id(), sysuser.getUsr_passwd()});
     }
 
     /**
@@ -34,7 +34,7 @@ public class LoginDao extends BaseDao
     public int checkUserExists(String usr_id)
     {
         String sql = "select count(1) from sysuser where usr_id = ?";
-        return getjBaseDao().queryForInt(sql, new String[]{usr_id});
+        return queryForInt(sql, new String[]{usr_id});
     }
 
     /**
@@ -47,7 +47,7 @@ public class LoginDao extends BaseDao
         StringBuffer sql = new StringBuffer("\n");
         sql.append("insert into sysuser (usr_id,usr_code,usr_name,usr_passwd,usr_type,usr_mail)");
         sql.append("values(?,replace(uuid(),'-',''),?,?,1,?)");
-        getjBaseDao().update(sql.toString(), new Object[]{sysuser.getUsr_id(), sysuser.getUsr_name(), sysuser.getUsr_passwd(), sysuser.getUsr_mail()});
+        update(sql.toString(), new Object[]{sysuser.getUsr_id(), sysuser.getUsr_name(), sysuser.getUsr_passwd(), sysuser.getUsr_mail()});
     }
 
     /**
@@ -59,6 +59,6 @@ public class LoginDao extends BaseDao
     public Sysuser getUsrInfoByIdPw(Sysuser sysuser)
     {
         String sql = "select usr_code from sysuser where usr_id = ? and usr_passwd = ? and usr_flag = 1 and usr_type = 1 and usr_black = 0";
-        return getjBaseDao().queryForModel(sql, new String[]{sysuser.getUsr_id(), sysuser.getUsr_passwd()}, Sysuser.class);
+        return queryForModel(sql, new String[]{sysuser.getUsr_id(), sysuser.getUsr_passwd()}, Sysuser.class);
     }
 }

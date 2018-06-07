@@ -168,4 +168,29 @@ public class QuestionServiceImpl extends BaseServiceImpl implements QuestionServ
         String question = params.get("question");
         return questionDao.getCount4ReleasedQuestions(question, ownid);
     }
+
+    /**
+     * 将上载的excel数据保存到试题临时表中
+     *
+     * @param datas
+     */
+    @Override
+    public void insertTempQuestionsByExcel(List<List<String>> datas, String userid, String type)
+    {
+        for (List<String> list : datas)
+        {
+            questionDao.saveNewTempQuestion4Excel(list, userid, type);
+        }
+    }
+
+    /**
+     * 获取试题类型
+     *
+     * @return
+     */
+    @Override
+    public List getQuestionType()
+    {
+        return questionDao.getQuestionType();
+    }
 }

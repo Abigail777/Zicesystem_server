@@ -28,7 +28,7 @@ public class QuestionDao extends BaseDao
     public List<Questionbanktemp> getOwnTempQuestions(String currentUser)
     {
         String sql = "select * from Questionbanktemp where ownId = ? ";
-        return getjBaseDao().queryForModelList(sql, new String[]{currentUser}, Questionbanktemp.class);
+        return queryForModelList(sql, new String[]{currentUser}, Questionbanktemp.class);
     }
 
     /**
@@ -41,7 +41,7 @@ public class QuestionDao extends BaseDao
     public Questionbanktemp getOwnTempQuestionsById(String currentUser, int titalId)
     {
         String sql = "select * from Questionbanktemp where ownId = ? and titleid = ? ";
-        return getjBaseDao().queryForModel(sql, new Object[]{currentUser, titalId}, Questionbanktemp.class);
+        return queryForModel(sql, new Object[]{currentUser, titalId}, Questionbanktemp.class);
     }
 
     /**
@@ -56,7 +56,7 @@ public class QuestionDao extends BaseDao
         StringBuffer sql = new StringBuffer("\n");
         sql.append("insert into Questionbanktemp(classid,question,opt1,opt2,opt3,opt4,answer,explainmsg,ownid)");
         sql.append("values(?,?,?,?,?,?,?,?,?)");
-        getjBaseDao().update(sql.toString(), field);
+        update(sql.toString(), field);
     }
 
     /**
@@ -78,7 +78,7 @@ public class QuestionDao extends BaseDao
         sql.append("    answer      = ?,\n");
         sql.append("    explainmsg  = ? \n");
         sql.append("where  titleid  = ?");
-        getjBaseDao().update(sql.toString(), field);
+        update(sql.toString(), field);
     }
 
     /**
@@ -89,7 +89,7 @@ public class QuestionDao extends BaseDao
     public void deleteNewTempQuestion(int id)
     {
         String sql = "delete from Questionbanktemp where titleid = ? ";
-        getjBaseDao().update(sql, new Object[]{id});
+        update(sql, new Object[]{id});
     }
 
     /**
@@ -101,7 +101,7 @@ public class QuestionDao extends BaseDao
     {
         Object[] field = {b.getTitle(), b.getDescinfo(), b.getPrice(), b.getBatchid(), b.getOwnid()};
         String sql = "insert into batchinfo(title,descinfo,price,batchid,ownid)values(?,?,?,?,?)";
-        getjBaseDao().update(sql, field);
+        update(sql, field);
     }
 
     /**
@@ -117,7 +117,7 @@ public class QuestionDao extends BaseDao
         sql.append("  SELECT \n");
         sql.append("    replace(uuid(), '-', ''),1,classid,question,opt1,opt2,opt3,opt4,answer,explainmsg,ownid,? \n");
         sql.append("  FROM questionbanktemp WHERE ownid = ?  \n");
-        getjBaseDao().update(sql.toString(), new String[]{batchId, operator});
+        update(sql.toString(), new String[]{batchId, operator});
     }
 
     /**
@@ -128,7 +128,7 @@ public class QuestionDao extends BaseDao
     public void deleteQuestionBankTemp(String operator)
     {
         String sql = "delete from questionbanktemp where ownid = ?";
-        getjBaseDao().update(sql, new String[]{operator});
+        update(sql, new String[]{operator});
     }
 
     /**
@@ -140,7 +140,7 @@ public class QuestionDao extends BaseDao
     public List<Questionbank> getRelevantInfo(String likeStr, String ownid)
     {
         String sql = "select * from questionbank where question like ? and ownid = ?";
-        return getjBaseDao().queryForModelList(sql, new String[]{"%" + likeStr + "%", ownid}, Questionbank.class);
+        return queryForModelList(sql, new String[]{"%" + likeStr + "%", ownid}, Questionbank.class);
     }
 
     /**
@@ -161,7 +161,7 @@ public class QuestionDao extends BaseDao
         sql.append("  from  questionbank where question like ? and ownid = ?");
         sql.append(" order  by question " + order);
         sql.append(" limit " + offset + " , " + limit);
-        return getjBaseDao().queryForList(sql.toString(), new String[]{"%" + question + "%", ownid});
+        return queryForList(sql.toString(), new String[]{"%" + question + "%", ownid});
     }
 
     /**
@@ -174,6 +174,33 @@ public class QuestionDao extends BaseDao
     public int getCount4ReleasedQuestions(String question, String ownid)
     {
         String sql = "select count(1) from questionbank where question like ? and ownid = ?";
-        return getjBaseDao().queryForInt(sql, new String[]{"%" + question + "%", ownid});
+        return queryForInt(sql, new String[]{"%" + question + "%", ownid});
+    }
+
+    /**
+     * 往临时表中添加试题--excel
+     *
+     * @param list
+     * @param userId
+     * @param classid
+     */
+    public void saveNewTempQuestion4Excel(List<String> list, String userId, String classid)
+    {
+        Object[] field = {classid, list.get(1), list.get(2), list.get(3), list.get(4), list.get(5), list.get(6), list.get(7), userId};
+        StringBuffer sql = new StringBuffer("\n");
+        sql.append("insert into Questionbanktemp(classid,question,opt1,opt2,opt3,opt4,answer,explainmsg,ownid)");
+        sql.append("values(?,?,?,?,?,?,?,?,?)");
+        update(sql.toString(), field);
+    }
+
+    /**
+     * 获取试题类型
+     *
+     * @return
+     */
+    public List getQuestionType()
+    {
+        String sql = "select _id as value,description as text from questiontype";
+        return queryForList(sql);
     }
 }

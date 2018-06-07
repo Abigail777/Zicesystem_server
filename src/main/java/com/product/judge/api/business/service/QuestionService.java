@@ -39,4 +39,8 @@ public interface QuestionService extends BaseService
     List getAllReleasedQuestions(Map<String, String> params);
 
     int getCount4ReleasedQuestions(Map<String, String> params);
+
+    void insertTempQuestionsByExcel(List<List<String>> datas, String userid, String type);
+
+    List getQuestionType();
 }

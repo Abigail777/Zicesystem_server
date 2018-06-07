@@ -189,14 +189,11 @@ public class QuestionController
             String codedfilename = "";
             if (null != agent && -1 != agent.indexOf("MSIE") || null != agent && -1 != agent.indexOf("Trident"))
             {// ie
-
                 String name = java.net.URLEncoder.encode(fileNames, "UTF8");
-
                 codedfilename = name;
             }
             else if (null != agent && -1 != agent.indexOf("Mozilla"))
-            {// 火狐,chrome等
-
+            {// w3c标准浏览器
                 codedfilename = new String(fileNames.getBytes("UTF-8"), "iso-8859-1");
             }
 
@@ -230,7 +227,7 @@ public class QuestionController
      */
     @RequestMapping("/fileuploaded")
     @ResponseBody
-    public Result fileuploaded(@RequestParam(value = "xls_file", required = false) MultipartFile multipartfile) throws IOException
+    public Result fileuploaded(@RequestParam(value = "xls_file", required = false) MultipartFile multipartfile, HttpServletRequest request, String type) throws IOException
     {
         // 判断文件是否为空
         if (multipartfile.isEmpty())
@@ -241,16 +238,22 @@ public class QuestionController
         //遍历校验excel并处理数据
         is = multipartfile.getInputStream();
         List<List<String>> datas = ExcelUtil.readXlsx(is);
-        // TODO: 2018/5/23 处理业务
-        System.out.println(datas);
         if (datas != null && datas.size() > 0)
         {
+            String userid = SessionUtil.getCurrentUser(request);
+            questionService.insertTempQuestionsByExcel(datas, userid, type);
             return new Result(true);
-
         }
         else
         {
             return new Result(false);
         }
+    }
+
+    @RequestMapping(value = "getQuestionType")
+    @ResponseBody
+    List getQuestionType()
+    {
+        return questionService.getQuestionType();
     }
 }
